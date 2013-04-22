@@ -31,9 +31,7 @@ public class GLDM_U1_s0539848 implements PlugIn {
 	}
 	
 	public void run(String arg) {
-		
-		int width  = 566;  // Breite
-		int height = 400;  // Hoehe
+		int width  = 566, height = 400;
 		
 		// RGB-Bild erzeugen
 		ImagePlus imagePlus = NewImage.createRGBImage("GLDM_U1", width, height, 1, NewImage.FILL_BLACK);
@@ -41,53 +39,38 @@ public class GLDM_U1_s0539848 implements PlugIn {
 		
 		// Arrays fuer den Zugriff auf die Pixelwerte
 		int[] pixels = (int[])ip.getPixels();
-		
 		dialog();
 		
-		////////////////////////////////////////////////////////////////
-		// Hier bitte Ihre Aenderungen / Erweiterungen
+		
+		
+		
+		
 		
 		if ( choice.equals("Schwarzes Bild") ) {
-			// Schleife ueber die y-Werte
+			int r=0, g=0, b=0;
 			for (int y=0; y<height; y++) {
-				// Schleife ueber die x-Werte
 				for (int x=0; x<width; x++) {
 					int pos = y*width + x; // Arrayposition bestimmen
-					
-					int r = 0;
-					int g = 0;
-					int b = 0;
-					
-					// Werte zurueckschreiben
 					pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
 				}
 			}
 		
 		
 		} else if( choice.equals("Gelbes Bild")) {
-			// Schleife ueber die y-Werte
+			int r=255, g=255, b=0;
 			for (int y=0; y<height; y++) {
-				// Schleife ueber die x-Werte
 				for (int x=0; x<width; x++) {
 					int pos = y*width + x; // Arrayposition bestimmen
-					
-					int r = 255;
-					int g = 255;
-					int b = 0;
-					
-					// Werte zurueckschreiben
 					pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
 				}
 			}
 		}
 		
-		else if( choice.equals("Italienische Fahne")) { // grün, weiß, rot
+		else if( choice.equals("Italienische Fahne")) {
 			double drittel = width/3;
 			int r=0, g=0, b=0;
 			
-			// Schleife ueber die y-Werte
 			for (int y=0; y<height; y++) {
-				// Schleife ueber die x-Werte
 				for (int x=0; x<width; x++) {
 					int pos = y*width + x; // Arrayposition bestimmen
 					
@@ -105,44 +88,34 @@ public class GLDM_U1_s0539848 implements PlugIn {
 						b = 0;
 					}
 					
-					// Werte zurueckschreiben
 					pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
 				}
 			}
 		}
 		
 		else if( choice.equals("Schwarz/Weiss Verlauf")) {
-			// Schleife ueber die y-Werte
 			for (int y=0; y<height; y++) {
-				
-				// Schleife ueber die x-Werte
 				for (int x=0; x<width; x++) {
 					int pos = y*width + x; // Arrayposition bestimmen
 					
 					int r = (x*255)/(width-1);
-					int g = (x*255)/(width-1);
-					int b = (x*255)/(width-1);
+					int g = r;
+					int b = r;
 					
-					// Werte zurueckschreiben
 					pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
 				}
 			}
 		}
 		
 		else if( choice.equals("Horiz. Schwarz/Rot vert. Schwarz/Blau Verlauf")) {
-			// Schleife ueber die y-Werte
 			for (int y=0; y<height; y++) {
 				int b = (y*255)/(height-1);
+				int g = 0;
 				
-				// Schleife ueber die x-Werte
 				for (int x=0; x<width; x++) {
-					int pos = y*width + x; // Arrayposition bestimmen
-					
+					int pos = y*width + x; // Arrayposition bestimmen	
 					int r = (x*255)/(width-1);
-					int g = 0;
-					
-					
-					// Werte zurueckschreiben
+		
 					pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
 				}
 			}
@@ -233,8 +206,7 @@ public class GLDM_U1_s0539848 implements PlugIn {
 			int r, g, b;
 			int mx = width/2, my = height/2;
 			double radiusInnen = height/3; radiusInnen *= radiusInnen;
-			double radiusAußen = radiusInnen*1.30;
-			double radiusAußenBreite = radiusAußen - radiusInnen; // ~5306
+			double radiusAußen = radiusInnen*2.30;
 			
 			for (int y=0; y<height; y++) {	
 				for (int x=0; x<width; x++) {
@@ -254,16 +226,23 @@ public class GLDM_U1_s0539848 implements PlugIn {
 					// verlauf
 					} else if (radiusP < radiusAußen) {
 						
-						// r = z-punkte im außenradius / 
-						r = (int) ( ((radiusP - radiusInnen) / radiusAußenBreite) *255);
-						System.out.println( ((radiusP - radiusInnen) / radiusAußenBreite) *255);
-						g = 0;
-						b = 0;
+						/*  m = (y2-y1) / (x2-x1)
+						 *  f = mx+n
+						 *              
+						 *   | .(rI|255)        
+						 *   |                .(rA|0)
+						 *   ------------------------
+						 *  rI      rP        rA
+						 */
 						
-					
+						
+						g = (int) (255/(radiusAußen-radiusInnen) * (radiusP-radiusInnen)); 
+						b=g;
+						r=255;
+									
 					// weiß
 					} else {
-						r=255;
+						r = 255;
 						g = 255;
 						b = 255;
 					}
@@ -273,8 +252,6 @@ public class GLDM_U1_s0539848 implements PlugIn {
 			}
 		}
 		
-		
-		////////////////////////////////////////////////////////////////////
 		
 		// neues Bild anzeigen
 		imagePlus.show();
@@ -286,7 +263,7 @@ public class GLDM_U1_s0539848 implements PlugIn {
 		// Dialog fuer Auswahl der Bilderzeugung
 		GenericDialog gd = new GenericDialog("Bildart");
 		
-		gd.addChoice("Bildtyp", choices, choices[0]);
+		gd.addChoice("Bildtyp", choices, choices[7]);
 		
 		
 		gd.showDialog();	// generiere Eingabefenster
@@ -297,4 +274,3 @@ public class GLDM_U1_s0539848 implements PlugIn {
 			System.exit(0);
 	}
 }
-
