@@ -17,7 +17,8 @@ public class GLDM_U1_s0539848 implements PlugIn {
 		"Italienische Fahne",
 		"Bahamische Fahne",
 		"Japanische Fahne",
-		"Japanische Fahne mit weichen Kanten"
+		"Japanische Fahne mit weichen Kanten",
+		"Streifenmuster"
 	};
 	
 	private String choice;
@@ -245,6 +246,29 @@ public class GLDM_U1_s0539848 implements PlugIn {
 						r = 255;
 						g = 255;
 						b = 255;
+					}
+					
+					pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
+				}
+			}
+		}
+		
+		
+		else if( choice.equals("Streifenmuster")) {
+			int r = 0, g = 0, b = 0;
+			
+			for (int y=0; y<height; y++) {	
+				for (int x=0; x<width; x++) {
+					int pos = y*width + x; // Arrayposition bestimmen
+					
+					if (x%2 == 1) {
+						r=0;
+						g=0;
+						b=0;
+					} else {
+						r=255;
+						g=255;
+						b=255;
 					}
 					
 					pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
