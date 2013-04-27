@@ -287,7 +287,7 @@ public class GLDM_U1_s0539848 implements PlugIn {
 		// Dialog fuer Auswahl der Bilderzeugung
 		GenericDialog gd = new GenericDialog("Bildart");
 		
-		gd.addChoice("Bildtyp", choices, choices[7]);
+		gd.addChoice("Bildtyp", choices, choices[0]);
 		
 		
 		gd.showDialog();	// generiere Eingabefenster
