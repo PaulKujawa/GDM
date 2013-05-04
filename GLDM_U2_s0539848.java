@@ -64,7 +64,7 @@ public class GLDM_U2_s0539848 implements PlugIn {
       
     class CustomWindow extends ImageWindow implements ChangeListener {         
         private JSlider jSliderBrightness, jSliderKontrast, jSliderSaettigung, jSliderHue;
-		private double brightness, kontrast=1, saettigung = 1, hue;
+		private double brightness=0, kontrast=10, saettigung = 1, hue=0;
 
 		CustomWindow(ImagePlus imp, ImageCanvas ic) {
             super(imp, ic);
@@ -75,7 +75,7 @@ public class GLDM_U2_s0539848 implements PlugIn {
         	//JPanel panel = new JPanel();
         	
             jSliderBrightness = makeTitledSilder("Helligkeit", 0, 200, 100);
-            jSliderKontrast = makeTitledSilder("Kontrast", 0, 10, 1);
+            jSliderKontrast = makeTitledSilder("Kontrast", 0, 20, 10);
             jSliderSaettigung = makeTitledSilder("Saettigung", 0, 5, 2);
             jSliderHue = makeTitledSilder("Hue", 0, 360, 0);
             
@@ -128,6 +128,7 @@ public class GLDM_U2_s0539848 implements PlugIn {
 			
 			else if (slider == jSliderKontrast) {
 				kontrast = slider.getValue();
+				kontrast /= 10;
 				String str = "Kontrast " + kontrast; 
 				setSliderTitle(jSliderKontrast, str); 
 			}
@@ -166,12 +167,19 @@ public class GLDM_U2_s0539848 implements PlugIn {
 					int Cb = (int) (-0.168736*r - 0.331264*g + 0.5*b);
 					int Cr = (int) (0.5*r - 0.418688*g - 0.081312*b);
 					
+					
+					
 					// Helligkeit
 					Y += brightness;
+					
+					// Kontrast
+					Y = (int) (kontrast*(Y-128)+128);
 					
 					// Sättigung
 					Cb *= saettigung;
 					Cr *= saettigung;
+					
+					
 					
 					// Hue
 					/*			cbOld
@@ -179,21 +187,15 @@ public class GLDM_U2_s0539848 implements PlugIn {
 					 *  cos -sin	  Cb =  cos*cbOld - sin*crOld		= Cb
 					 *  sin cos		  Cr = sin*cbOld + cos*crOld		= Cr
 					 */
-					
 					int CbOld = Cb;
 					int CrOld = Cr;
 					double phi = Math.toRadians(hue);
 					
 					Cb = (int) (Math.cos(phi)*CbOld - Math.sin(phi)*CrOld);
 					Cr = (int) (Math.sin(phi)*CbOld + Math.cos(phi)*CrOld);
+
+
 					
-					
-					// Kontrast
-					// @TODO kontrast kriegt teilweise negative werte
-					
-					//Y = (int) (kontrast*(Y-128)+128);
-					Cb = (int) (kontrast*(Cb-128)+128); 
-					Cr = (int) (kontrast*(Cr-128)+128);
 					
 					
 					// Farbtransformation zurück
