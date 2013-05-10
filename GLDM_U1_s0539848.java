@@ -124,53 +124,40 @@ public class GLDM_U1_s0539848 implements PlugIn {
 		
 		
 		else if( choice.equals("Bahamische Fahne")) {
-			double drittel = height/3;
 			int r=0, g=0, b=0;
+			int dreieckende = 0;
 			
-			// 3 streifen
-			for (int y=0; y<height; y++) {	
-				if (y <= drittel) {
-					r = 0;
-					g = 0;
-					b = 255;
-				} else if (y <= drittel*2) {
-					r = 255;
-					g = 255;
-					b = 0;
-				} else {
-					r = 0;
-					g = 0;
-					b = 255;
-				}
+			for (int y=0; y<height; y++) {
+				if (y<height/2)
+					dreieckende++;
+				else
+					dreieckende--;
 				
 				for (int x=0; x<width; x++) {
+					// schwarze dreieck
+					if (x<=dreieckende) {
+						r=0; g=0; b=0;
+					}
+					
+					// farbstriche
+					else if (y <= height/3) {
+						r = 0;
+						g = 0;
+						b = 255;
+					} else if (y <= height/3*2) {
+						r = 255;
+						g = 255;
+						b = 0;
+					} else {
+						r = 0;
+						g = 0;
+						b = 255;
+					}
+				
 					int pos = y*width + x; // Arrayposition bestimmen
 					pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
 				}
 			}
-			
-			int y=0;
-			r = 0;
-			g = 0;
-			b = 0;
-			
-			// obere dreieck
-			for (; y<height/2; y++) {
-				for (int x=0; x<y; x++) {			
-					int pos = y*width + x; // Arrayposition bestimmen
-					pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
-				}
-			}
-			
-			// untere dreieck
-			int k = y;
-			for (; y<height; y++) {
-				for (int x=0; x<k; x++) {
-					int pos = y*width + x; // Arrayposition bestimmen
-					pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
-				}
-				k--;
-			}			
 		}
 		
 		
