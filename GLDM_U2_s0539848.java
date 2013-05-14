@@ -31,8 +31,7 @@ public class GLDM_U2_s0539848 implements PlugIn {
 	
 	
     public static void main(String args[]) {
-    	IJ.open("C:\\Users\\Barra_2\\Desktop\\ImageJ\\plugins\\GDM\\orchid.jpg");
-		
+    	IJ.open("orchid.jpg");
 		GLDM_U2_s0539848 pw = new GLDM_U2_s0539848();
 		pw.imp = IJ.getImage();
 		pw.run("");
@@ -64,7 +63,7 @@ public class GLDM_U2_s0539848 implements PlugIn {
       
     class CustomWindow extends ImageWindow implements ChangeListener {         
         private JSlider jSliderBrightness, jSliderKontrast, jSliderSaettigung, jSliderHue;
-		private double brightness=0, kontrast=10, saettigung = 1, hue=0;
+		private double brightness=0, kontrast=1, saettigung = 1, hue=180;
 
 		CustomWindow(ImagePlus imp, ImageCanvas ic) {
             super(imp, ic);

@@ -38,8 +38,6 @@ public class GRDM_U3_s0540603 implements PlugIn {
 	public static void main(String args[]) {
 
 		IJ.open("bear.jpg");
-		//IJ.open("Z:/Pictures/Beispielbilder/orchid.jpg");
-
 		GRDM_U3_s0540603 pw = new GRDM_U3_s0540603();
 		pw.imp = IJ.getImage();
 		pw.run("");
@@ -98,23 +96,21 @@ public class GRDM_U3_s0540603 implements PlugIn {
 		}
 
 		public void itemStateChanged(ItemEvent evt) {
-
 			// Get the affected item
 			Object item = evt.getItem();
 
 			if (evt.getStateChange() == ItemEvent.SELECTED) {
-				System.out.println("Selected: " + item.toString());
+				//System.out.println("Selected: " + item.toString());
 				method = item.toString();
 				changePixelValues(imp.getProcessor());
 				imp.updateAndDraw();
 			} 
-
 		}
 
 
 		private void changePixelValues(ImageProcessor ip) {
 
-			// Array zum ZurÃ¼ckschreiben der Pixelwerte
+			// Array zum Zurückschreiben der Pixelwerte
 			int[] pixels = (int[])ip.getPixels();
 
 			if (method.equals("Original")) {
@@ -128,165 +124,136 @@ public class GRDM_U3_s0540603 implements PlugIn {
 				}
 			}
 			
+			
 			if (method.equals("Rot-Kanal")) {
-
 				for (int y=0; y<height; y++) {
 					for (int x=0; x<width; x++) {
 						int pos = y*width + x;
-						int argb = origPixels[pos];  // Lesen der Originalwerte 
+						int argb = origPixels[pos];   
 
-						int r = (argb >> 16) & 0xff;
-						//int g = (argb >>  8) & 0xff;
-						//int b =  argb        & 0xff;
-
-						int rn = r;
+						int rn = (argb >> 16) & 0xff;
 						int gn = 0;
 						int bn = 0;
-
-						// Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
 
 						pixels[pos] = (0xFF<<24) | (rn<<16) | (gn<<8) | bn;
 					}
 				}	
 			}
 			
+			
 			if (method.equals("Negativ")) {
-
 				for (int y=0; y<height; y++) {
 					for (int x=0; x<width; x++) {
 						int pos = y*width + x;
-						int argb = origPixels[pos];  // Lesen der Originalwerte 
+						int argb = origPixels[pos];   
 
 						int r = (argb >> 16) & 0xff;
 						int g = (argb >> 8) & 0xff;
 						int b = (argb >> 0) & 0xff;
 
-						int rn = 255-r; //Wert invertiert
-						int gn = 255-g; //Wert invertiert
-						int bn = 255-b; //Wert invertiert
-
-						// Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
+						// invertieren
+						int rn = 255-r;
+						int gn = 255-g;
+						int bn = 255-b;
 
 						pixels[pos] = (0xFF<<24) | (rn<<16) | (gn<<8) | bn;
 					}
 				}	
 			}
 			
-			if (method.equals("Graustufen")) {
 
+			if (method.equals("Graustufen")) {
 				for (int y=0; y<height; y++) {
 					for (int x=0; x<width; x++) {
 						int pos = y*width + x;
-						int argb = origPixels[pos];  // Lesen der Originalwerte 
+						int argb = origPixels[pos];   
 
 						int r = (argb >> 16) & 0xff;
-						int g = (argb >> 16) & 0xff;
-						int b = (argb >> 16) & 0xff;
+						int g = (argb >> 8) & 0xff;
+						int b = (argb >> 0) & 0xff;
 						
 						int Y = (int) (0.299*r + 0.587*g + 0.114*b); //Formel zur Berechnung der Luminanz
 
-						int rn = Y; //Rotwert wird mit der Luminanz gleichgesetzt
-						int gn = Y; //Grünwert wird mit der Luminanz gleichgesetzt
-						int bn = Y; //Blauwert wird mit der Luminanz gleichgesetzt
-
-						// Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
+						// mit luminanz gleichsetzen
+						int rn = Y;
+						int gn = Y;
+						int bn = Y;
 
 						pixels[pos] = (0xFF<<24) | (rn<<16) | (gn<<8) | bn;
 					}
 				}
 			}			
 
+			
 			if (method.equals("Binär")) {
-
 				for (int y=0; y<height; y++) {
 					for (int x=0; x<width; x++) {
 						int pos = y*width + x;
-						int argb = origPixels[pos];  // Lesen der Originalwerte 
+						int argb = origPixels[pos];   
 
 						int r = (argb >> 16) & 0xff;
-						int g = (argb >> 16) & 0xff;
-						int b = (argb >> 16) & 0xff;
+						int g = (argb >> 8) & 0xff;
+						int b = (argb >> 0) & 0xff;
 						
-						int Y = (int) (0.299*r + 0.587*g + 0.114*b); //Formel zur Berechnung der Luminanz
+						int Y = (int) (0.299*r + 0.587*g + 0.114*b); // Luminanz
+						int rn=0, gn=0, bn=0; // weiß
 						
-						if (Y >= 128) {	//Alle Pixel mit einer Luminanz größer als 127 werden schwarz eingefärbt						
-							r = 255;
-							g = 255;
-							b = 255;
+						// Y >= 128 = schwarz
+						if (Y >= 128) {						
+							rn = 255;
+							gn = 255;
+							bn = 255;
 						}
-						else {			//Alle Pixel mit einer Luminanz kleiner als 122 werden weiß eingefärbt
-							r = 0;
-							g = 0;
-							b = 0;
-						}
-
-						int rn = r;
-						int gn = g;
-						int bn = b;
-
-						// Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
-
+						
 						pixels[pos] = (0xFF<<24) | (rn<<16) | (gn<<8) | bn;
 					}
 				}
 			}
 
+			
 			if (method.equals("5 Töne")) {
-
 				for (int y=0; y<height; y++) {
 					for (int x=0; x<width; x++) {
 						int pos = y*width + x;
-						int argb = origPixels[pos];  // Lesen der Originalwerte 
+						int argb = origPixels[pos];   
 
 						int r = (argb >> 16) & 0xff;
-						int g = (argb >> 16) & 0xff;
-						int b = (argb >> 16) & 0xff;
+						int g = (argb >> 8) & 0xff;
+						int b = (argb >> 0) & 0xff;
 						
-						int Y = (int) (0.299*r + 0.587*g + 0.114*b); //Formel zur Berechnung der Luminanz
+						int Y = (int) (0.299*r + 0.587*g + 0.114*b); // Luminanz
 						
 						int calc1 = (int) (Y * 4 / 255 + 0.5); 	//Die Luminanz wird in 5 Blocke geteilt
 						int calc2 = calc1 * 255 / 4;			//Jeder Pixel wird einem Block zugeteilt
 												
-							r = calc2;
-							g = calc2;
-							b = calc2;
-						
-						int rn = r;
-						int gn = g;
-						int bn = b;
-
-						// Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
+						int rn = calc2;
+						int gn = calc2;
+						int bn = calc2;
 
 						pixels[pos] = (0xFF<<24) | (rn<<16) | (gn<<8) | bn;
 					}
 				}
 			}
 
+			
 			if (method.equals("10 Töne")) {
-
 				for (int y=0; y<height; y++) {
 					for (int x=0; x<width; x++) {
 						int pos = y*width + x;
-						int argb = origPixels[pos];  // Lesen der Originalwerte 
+						int argb = origPixels[pos];   
 
 						int r = (argb >> 16) & 0xff;
-						int g = (argb >> 16) & 0xff;
-						int b = (argb >> 16) & 0xff;
+						int g = (argb >> 8) & 0xff;
+						int b = (argb >> 0) & 0xff;
 						
 						int Y = (int) (0.299*r + 0.587*g + 0.114*b); //Formel zur Berechnung der Luminanz
 						
 						int calc1 = (int) (Y * 9 / 255 + 0.5); 	//Die Luminanz wird in 10 Blocke geteilt
 						int calc2 = calc1 * 255 / 9;			//Jeder Pixel wird einem Block zugeteilt
 												
-							r = calc2;
-							g = calc2;
-							b = calc2;
-						
-						int rn = r;
-						int gn = g;
-						int bn = b;
-
-						// Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
+						int rn = calc2;
+						int gn = calc2;
+						int bn = calc2;
 
 						pixels[pos] = (0xFF<<24) | (rn<<16) | (gn<<8) | bn;
 					}
@@ -301,102 +268,97 @@ public class GRDM_U3_s0540603 implements PlugIn {
 				for (int y=0; y<height; y++) {
 					for (int x=0; x<width; x++) {
 						int pos = y*width + x;
-						int argb = origPixels[pos];  // Lesen der Originalwerte 
+						int argb = origPixels[pos];   
 
 						int r = (argb >> 16) & 0xff;
-						int g = (argb >> 16) & 0xff;
-						int b = (argb >> 16) & 0xff;
+						int g = (argb >> 8) & 0xff;
+						int b = (argb >> 0) & 0xff;
 												
-						if (Y > 128){
-							New =  (int) ((0.299*r + 0.587*g + 0.114*b) - (255 - Y));
-						}
-						
-						else {
-							New =  (int) ((0.299*r + 0.587*g + 0.114*b) + Y);	
-						}
+						if (Y > 128)
+							New = (int) ((0.299*r + 0.587*g + 0.114*b) - (255 - Y));
+						else
+							New = (int) ((0.299*r + 0.587*g + 0.114*b) + Y);	
 
 						Y = (int) (0.299*r + 0.587*g + 0.114*b);
 						
-						System.out.println(Y);
+						int rn=0, gn=0, bn=0;
 						
 						if (New >= 128) {							
-							r = 255;
-							g = 255;
-							b = 255;
+							rn = 255;
+							gn = 255;
+							bn = 255;
 						}
-						else {
-							r = 0;
-							g = 0;
-							b = 0;
-						}
-
-						int rn = r;
-						int gn = g;
-						int bn = b;
 						
-
-						// Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
-
 						pixels[pos] = (0xFF<<24) | (rn<<16) | (gn<<8) | bn;
 					}
 				}
 			}
 			
 			if (method.equals("Sepia")) {
-
 				for (int y=0; y<height; y++) {
 					for (int x=0; x<width; x++) {
 						int pos = y*width + x;
-						int argb = origPixels[pos];  // Lesen der Originalwerte 
+						int argb = origPixels[pos];   
 
 						int r = (argb >> 16) & 0xff;
-						int g = (argb >> 16) & 0xff;
-						int b = (argb >> 16) & 0xff;
+						int g = (argb >> 8) & 0xff;
+						int b = (argb >> 0) & 0xff;
 						
 						int Y = (int) (0.299*r + 0.587*g + 0.114*b)*9; //Die Helligkeit wird angepasst
 
 						int rn = (int) (Y * 0.112); //Farbwert wird angepasst
-						int gn = (int) (Y * 0.066);	//Jeder Pixel wird einem Block zugeteilt
-						int bn = (int) (Y * 0.020);	//Jeder Pixel wird einem Block zugeteilt
+						int gn = (int) (Y * 0.066);	//Farbwert wird angepasst
+						int bn = (int) (Y * 0.020);	//Farbwert wird angepasst
 
 						// Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
-
 						pixels[pos] = (0xFF<<24) | (rn<<16) | (gn<<8) | bn;
-						
 					}
 				}
 			}
 			
+			
 			if (method.equals("Sechs Farben")) {
-
 				for (int y=0; y<height; y++) {
 					for (int x=0; x<width; x++) {
 						int pos = y*width + x;
-						int argb = origPixels[pos];  // Lesen der Originalwerte 
+						int argb = origPixels[pos]; 
 
 						int r = (argb >> 16) & 0xff;
-						int g = (argb >> 16) & 0xff;
-						int b = (argb >> 16) & 0xff;
+						int g = (argb >> 8) & 0xff;
+						int b = (argb >> 0) & 0xff;
 						
-						int Y = (int) (0.299*r + 0.587*g + 0.114*b);
-						
-						int calc1 = (int) (Y * 4 / 255 + 0.5);
-						int calc2 = calc1 * 255 / 4;
-												
-							r = calc2;
-							g = calc2;
-							b = calc2;
-						
-						int rn = r;
-						int gn = g;
-						int bn = b;
+						int[] colors = getColor(r,g,b);
+						int rn = colors[0];
+						int gn = colors[1];
+						int bn = colors[2];
 
 						// Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
-
 						pixels[pos] = (0xFF<<24) | (rn<<16) | (gn<<8) | bn;
 					}
 				}
 			}
 		}
-	} // CustomWindow inner class
+	}
+
+	
+	private int[] getColor (int r, int g, int b) {
+		int[][] colors = {{139,69,19}, {255,105,79}, {50,50,155}, {200,200,200}, {152,148,146}, {70,70,76}};
+		int[] rgb = {0,0,0};
+		int min = 0;
+		
+		for (int[] i : colors) {	
+			if (min == 0) {
+				min = Math.abs(r-i[0]) + Math.abs(g-i[1]) + Math.abs(b-i[2]);
+				rgb[0]=i[0]; rgb[1]=i[1]; rgb[2]=i[2];
+			}
+			else {
+				int neu = Math.abs(r-i[0]) + Math.abs(g-i[1]) + Math.abs(b-i[2]);
+				if (min > neu) {
+					min = neu;
+					rgb[0]=i[0]; rgb[1]=i[1]; rgb[2]=i[2];
+				}
+			}
+		}
+		return rgb;
+	}
 } 
