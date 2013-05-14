@@ -262,8 +262,8 @@ public class GRDM_U3_s0540603 implements PlugIn {
 			
 			if (method.equals("Binär mit Diffusion")) {
 				
-				int New;
 				int Y = 0;
+				int dif = 0;;
 
 				for (int y=0; y<height; y++) {
 					for (int x=0; x<width; x++) {
@@ -273,20 +273,27 @@ public class GRDM_U3_s0540603 implements PlugIn {
 						int r = (argb >> 16) & 0xff;
 						int g = (argb >> 8) & 0xff;
 						int b = (argb >> 0) & 0xff;
-												
-						if (Y > 128)
-							New = (int) ((0.299*r + 0.587*g + 0.114*b) - (255 - Y));
+						
+						if (x==0)
+							dif = 0;
+						else if (Y > 128)
+							dif =  (-255 + Y);
 						else
-							New = (int) ((0.299*r + 0.587*g + 0.114*b) + Y);	
-
-						Y = (int) (0.299*r + 0.587*g + 0.114*b);
+							dif = Y;
+						
+						Y = (int) (0.299*r + 0.587*g + 0.114*b + dif);
 						
 						int rn=0, gn=0, bn=0;
 						
-						if (New >= 128) {							
+						if (Y >= 128) {							
 							rn = 255;
 							gn = 255;
 							bn = 255;
+						}
+						else {
+							rn = 0;
+							gn = 0;
+							bn = 0;
 						}
 						
 						pixels[pos] = (0xFF<<24) | (rn<<16) | (gn<<8) | bn;
