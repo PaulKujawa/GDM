@@ -274,6 +274,7 @@ public class GRDM_U3_s0540603 implements PlugIn {
 						int g = (argb >> 8) & 0xff;
 						int b = (argb >> 0) & 0xff;
 						
+						//Die Differenz wird berechnet
 						if (x==0)
 							dif = 0;
 						else if (Y > 128)
