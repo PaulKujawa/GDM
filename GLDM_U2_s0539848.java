@@ -63,7 +63,7 @@ public class GLDM_U2_s0539848 implements PlugIn {
       
     class CustomWindow extends ImageWindow implements ChangeListener {         
         private JSlider jSliderBrightness, jSliderKontrast, jSliderSaettigung, jSliderHue;
-		private double brightness=0, kontrast=1, saettigung = 1, hue=180;
+		private double brightness=0, kontrast=1, saettigung = 1, hue=0;
 
 		CustomWindow(ImagePlus imp, ImageCanvas ic) {
             super(imp, ic);
