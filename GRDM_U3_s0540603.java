@@ -212,6 +212,8 @@ public class GRDM_U3_s0540603 implements PlugIn {
 
 			
 			if (method.equals("5 Töne")) {
+				int stufen=5;
+				
 				for (int y=0; y<height; y++) {
 					for (int x=0; x<width; x++) {
 						int pos = y*width + x;
@@ -223,8 +225,8 @@ public class GRDM_U3_s0540603 implements PlugIn {
 						
 						int Y = (int) (0.299*r + 0.587*g + 0.114*b); // Luminanz
 						
-						int calc1 = (int) (Y * 4 / 255 + 0.5); 	//Die Luminanz wird in 5 Blocke geteilt
-						int calc2 = calc1 * 255 / 4;			//Jeder Pixel wird einem Block zugeteilt
+						int calc1 = (int) (Y*stufen/255); 	//Die Luminanz wird in 5 Blocke geteilt
+						int calc2 = calc1*255/(stufen-1);	//Jeder Pixel wird einem Block zugeteilt
 												
 						int rn = calc2;
 						int gn = calc2;
@@ -237,6 +239,8 @@ public class GRDM_U3_s0540603 implements PlugIn {
 
 			
 			if (method.equals("10 Töne")) {
+				int stufen=10;
+				
 				for (int y=0; y<height; y++) {
 					for (int x=0; x<width; x++) {
 						int pos = y*width + x;
@@ -248,8 +252,8 @@ public class GRDM_U3_s0540603 implements PlugIn {
 						
 						int Y = (int) (0.299*r + 0.587*g + 0.114*b); //Formel zur Berechnung der Luminanz
 						
-						int calc1 = (int) (Y * 9 / 255 + 0.5); 	//Die Luminanz wird in 10 Blocke geteilt
-						int calc2 = calc1 * 255 / 9;			//Jeder Pixel wird einem Block zugeteilt
+						int calc1 = (int) (Y*stufen/255); 	//Die Luminanz wird in 5 Blocke geteilt
+						int calc2 = calc1*255/(stufen-1);	//Jeder Pixel wird einem Block zugeteilt
 												
 						int rn = calc2;
 						int gn = calc2;
@@ -261,9 +265,7 @@ public class GRDM_U3_s0540603 implements PlugIn {
 			}
 			
 			if (method.equals("Binär mit Diffusion")) {
-				
-				int Y = 0;
-				int dif = 0;;
+				int Y=0, dif=0;
 
 				for (int y=0; y<height; y++) {
 					for (int x=0; x<width; x++) {
@@ -278,7 +280,7 @@ public class GRDM_U3_s0540603 implements PlugIn {
 						if (x==0)
 							dif = 0;
 						else if (Y > 128)
-							dif =  (-255 + Y);
+							dif = (-255 + Y);
 						else
 							dif = Y;
 						

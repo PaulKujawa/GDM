@@ -183,8 +183,8 @@ public class GLDM_U2_s0539848 implements PlugIn {
 					// Hue
 					/*			cbOld
 					 * 			crOld
-					 *  cos -sin	  Cb =  cos*cbOld - sin*crOld		= Cb
-					 *  sin cos		  Cr = sin*cbOld + cos*crOld		= Cr
+					 *  cos -sin	  Cb = cos*cbOld - sin*crOld
+					 *  sin cos		  Cr = sin*cbOld + cos*crOld
 					 */
 					int CbOld = Cb;
 					int CrOld = Cr;
@@ -199,7 +199,7 @@ public class GLDM_U2_s0539848 implements PlugIn {
 					
 					// Farbtransformation zurück
 					int rn 	= (int) (Y + 1.402 * Cr);
-					int gn = (int) (Y - 0.3441*Cb- - 0.7141*Cr);
+					int gn = (int) (Y - 0.3441*Cb- 0.7141*Cr);
 					int bn = (int) (Y + 1.772*Cb);
 					
 					// Werte begrenzen
