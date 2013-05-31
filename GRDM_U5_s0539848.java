@@ -26,7 +26,7 @@ import javax.swing.event.ChangeListener;
      Opens an image window and adds a panel below the image
  */
 public class GRDM_U5_s0539848 implements PlugIn {
-	String[] items = {"Original", "Filter 1"};
+	String[] items = {"Original", "Weichzeichner"};
 	ImagePlus imp; // ImagePlus object
 	private int[] origPixels;
 	private int width;
@@ -115,24 +115,44 @@ public class GRDM_U5_s0539848 implements PlugIn {
 				}
 			}
 			
-			if (method.equals("Filter 1")) {
-				for (int y=0; y<height; y++) {
+			
+			if (method.equals("Weichzeichner")) {
+				for (int y=0; y<height; y++) {		
 					for (int x=0; x<width; x++) {
 						int pos = y*width + x;
-						int argb = origPixels[pos];  // Lesen der Originalwerte 
-
-						int r = (argb >> 16) & 0xff;
-						int g = (argb >>  8) & 0xff;
-						int b =  argb        & 0xff;
-
-						int rn = r/2;
-						int gn = g/2;
-						int bn = b/2;
-
-						pixels[pos] = (0xFF<<24) | (rn<<16) | (gn << 8) | bn;
+						int[] ges = {0,0,0,0}; // amount rgb
+						ges = addPixel(pos, ges); // pixel itself
+						
+						if (x>0) {
+											ges = addPixel(pos-1, ges); 	  // links
+							if (y>0) 		ges = addPixel(pos-width-1, ges); // l. oben
+							if (y<height-1) ges = addPixel(pos+width-1, ges); // l. unten
+						}
+						
+						if (x<width-1) { 
+											ges = addPixel(pos+1, ges); 	  // rechts
+							if (y>0) 		ges = addPixel(pos-width+1, ges); // r. soben
+							if (y<height-1) ges = addPixel(pos+width+1, ges); // r. unten
+						}
+						
+						if (y>0)		ges = addPixel(pos-width, ges); // oben
+						if (y<height-1)	ges = addPixel(pos+width, ges); // unten
+						
+						
+						ges[1]/=ges[0]; ges[2]/=ges[0]; ges[3]/=ges[0];
+						pixels[pos] = (0xFF<<24) | (ges[1]<<16) | (ges[2] << 8) | ges[3];
 					}
 				}
 			}
+		}
+		
+		private int[] addPixel(int pos, int[] ges) {
+			int argb=origPixels[pos];
+			ges[0]++;
+			ges[1]+= (argb >> 16) & 0xff;
+			ges[2]+= (argb >>  8) & 0xff;
+			ges[3]+=  argb        & 0xff;
+			return ges;
 		}
 	}
 } 
