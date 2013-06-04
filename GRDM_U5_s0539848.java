@@ -120,39 +120,36 @@ public class GRDM_U5_s0539848 implements PlugIn {
 				for (int y=0; y<height; y++) {		
 					for (int x=0; x<width; x++) {
 						int pos = y*width + x;
-						int[] ges = {0,0,0,0}; // amount rgb
-						ges = addPixel(pos, ges); // pixel itself
+						int[] rgb = {0,0,0};
+						short pixelDiv = 0;
 						
-						if (x>0) {
-											ges = addPixel(pos-1, ges); 	  // links
-							if (y>0) 		ges = addPixel(pos-width-1, ges); // l. oben
-							if (y<height-1) ges = addPixel(pos+width-1, ges); // l. unten
+						for (int py=y-1; py <= y+1; py++) {
+							for (int px=x-1; px <= x+1; px++) {
+								int[] ret = addPixel(px, py, rgb);
+								if (ret != null) {
+									rgb = ret;
+									pixelDiv++;
+								}
+							}
 						}
 						
-						if (x<width-1) { 
-											ges = addPixel(pos+1, ges); 	  // rechts
-							if (y>0) 		ges = addPixel(pos-width+1, ges); // r. soben
-							if (y<height-1) ges = addPixel(pos+width+1, ges); // r. unten
-						}
-						
-						if (y>0)		ges = addPixel(pos-width, ges); // oben
-						if (y<height-1)	ges = addPixel(pos+width, ges); // unten
-						
-						
-						ges[1]/=ges[0]; ges[2]/=ges[0]; ges[3]/=ges[0];
-						pixels[pos] = (0xFF<<24) | (ges[1]<<16) | (ges[2] << 8) | ges[3];
+						rgb[0]/=pixelDiv; rgb[1]/=pixelDiv; rgb[2]/=pixelDiv;
+						pixels[pos] = (0xFF<<24) | (rgb[0]<<16) | (rgb[1] << 8) | rgb[2];
 					}
 				}
 			}
 		}
 		
-		private int[] addPixel(int pos, int[] ges) {
-			int argb=origPixels[pos];
-			ges[0]++;
-			ges[1]+= (argb >> 16) & 0xff;
-			ges[2]+= (argb >>  8) & 0xff;
-			ges[3]+=  argb        & 0xff;
-			return ges;
+		private int[] addPixel(int px, int py, int[] rgb) {
+			if (px < 0 || px >= width || py < 0 || py >= height)
+				return null;
+			
+			if (py>0) py--;
+			int argb=origPixels[py*width +px];
+			rgb[0]+= (argb >> 16) & 0xff;
+			rgb[1]+= (argb >>  8) & 0xff;
+			rgb[2]+=  argb        & 0xff;
+			return rgb;
 		}
 	}
 } 
