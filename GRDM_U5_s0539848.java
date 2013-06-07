@@ -26,7 +26,7 @@ import javax.swing.event.ChangeListener;
      Opens an image window and adds a panel below the image
  */
 public class GRDM_U5_s0539848 implements PlugIn {
-	String[] items = {"Original", "Weichzeichner"};
+	String[] items = {"Original", "Weichzeichner", "Hochpassfilter", "Verstärkte Kanten"};
 	ImagePlus imp; // ImagePlus object
 	private int[] origPixels;
 	private int width;
@@ -133,12 +133,106 @@ public class GRDM_U5_s0539848 implements PlugIn {
 							}
 						}
 						
-						rgb[0]/=pixelDiv; rgb[1]/=pixelDiv; rgb[2]/=pixelDiv;
+						// 1/9
+						rgb[0]/=pixelDiv; 
+						rgb[1]/=pixelDiv; 
+						rgb[2]/=pixelDiv;
+						pixels[pos] = (0xFF<<24) | (rgb[0]<<16) | (rgb[1] << 8) | rgb[2];
+					}
+				}
+			}
+			
+			
+			else if (method.equals("Hochpassfilter")) {
+				for (int y=0; y<height; y++) {	
+					for (int x=0; x<width; x++) {
+						int pos = y*width + x;
+						int[] rgb = {0,0,0};
+						short pixelDiv = 1;
+						
+						for (int py=y-1; py <= y+1; py++) {
+							for (int px=x-1; px <= x+1; px++) {
+								
+								if (py!=y || px!=x) { // mitte auslassen
+									int[] ret = addPixel(px, py, rgb);
+									if (ret != null) {
+										rgb = ret;
+										pixelDiv++;
+									}
+								}
+							}
+						}
+						
+						// rand is negativ -1/9
+						int rand[] = {-rgb[0]/pixelDiv, -rgb[1]/pixelDiv, -rgb[2]/pixelDiv}; 
+						
+						// mitte ist positiv 8/9
+						int[] mitte = {0,0,0};
+						mitte = addPixel(x, y, mitte);
+						mitte[0] *= (pixelDiv-1d)/pixelDiv;
+						mitte[1] *= (pixelDiv-1d)/pixelDiv;
+						mitte[2] *= (pixelDiv-1d)/pixelDiv;
+						
+						// ges
+						rgb[0] = normalize(rand[0]+mitte[0]+128);
+						rgb[1] = normalize(rand[1]+mitte[1]+128);
+						rgb[2] = normalize(rand[2]+mitte[2]+128);
+						
+						pixels[pos] = (0xFF<<24) | (rgb[0]<<16) | (rgb[1] << 8) | rgb[2];
+					}
+				}
+			}
+			
+			
+			else if (method.equals("Verstärkte Kanten")) {
+				for (int y=0; y<height; y++) {	
+					for (int x=0; x<width; x++) {
+						int pos = y*width + x;
+						int[] rgb = {0,0,0};
+						short pixelDiv = 1;
+						
+						for (int py=y-1; py <= y+1; py++) {
+							for (int px=x-1; px <= x+1; px++) {
+								
+								if (py!=y || px!=x) { // mitte auslassen
+									int[] ret = addPixel(px, py, rgb);
+									if (ret != null) {
+										rgb = ret;
+										pixelDiv++;
+									}
+								}
+							}
+						}
+						
+						// rand is negativ -1/9
+						int rand[] = {-rgb[0]/pixelDiv, -rgb[1]/pixelDiv, -rgb[2]/pixelDiv}; 
+						
+						// mitte ist positiv 8/9
+						int[] mitte = {0,0,0};
+						mitte = addPixel(x, y, mitte);
+						mitte[0] *= (pixelDiv+8.0)/pixelDiv;
+						mitte[1] *= (pixelDiv+8.0)/pixelDiv;
+						mitte[2] *= (pixelDiv+8.0)/pixelDiv;
+						
+						// ges
+						rgb[0] = normalize(rand[0]+mitte[0]);
+						rgb[1] = normalize(rand[1]+mitte[1]);
+						rgb[2] = normalize(rand[2]+mitte[2]);
+						
 						pixels[pos] = (0xFF<<24) | (rgb[0]<<16) | (rgb[1] << 8) | rgb[2];
 					}
 				}
 			}
 		}
+		
+		private int normalize(int n){
+			if (n<0)
+				return 0;
+			else if (n>255)
+				return 255;
+			else return n;
+		}
+		
 		
 		private int[] addPixel(int px, int py, int[] rgb) {
 			if (px < 0 || px >= width || py < 0 || py >= height)
